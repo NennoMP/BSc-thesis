@@ -1,0 +1,444 @@
+\chapter{IMPLEMENTAZIONE}
+\label{chapter_implementazione}
+In questo Capitolo, presentiamo il codice prodotto durante la fase di download della blockchain e la fase di analisi. Principalmente, andremo ad analizzare quali sono stati gli strumenti e le librerie utilizzate.
+Nella sezione successiva elencheremo gli strumenti che sono stati utilizzati per la fase di download: API ed endpoints, explorer della blockchain di EOS, linguaggi di programmazione e librerie esterne. Con l'obiettivo di rendere questa fase riproducibile in futuro riporteremo anche il codice dei programmi utilizzati sia per scaricare quei dati relativi al protocollo sia per scaricare quelli relativi agli utenti.
+
+\section{Strumenti}
+Siamo riusciti ad individuare il nome EOS del protocollo principale e di Smart Contracts secondari grazie all'elenco degli Smart Contracts presente sulla documentazione ufficiale di Yup. E' stato poi utilizzato \textbf{bloks.io} come explorer della blockchain\footnote{https://bloks.io/}, il quale permette la visualizzazione delle informazioni e dello storico azioni di uno specifico account/protocollo. Tramite il suo utilizzo è stato possibile condurre alcuni test, prima utilizzando l'estensione e poi osservando l'azione generata, atti ad indagare la funzionalità di alcune delle azioni presenti nel protocollo. \\
+Abbiamo utilizzato le API di eosflare.io\footnote{eosflare.io/api} (URL: https://api.eosflare.io) per scaricare le azioni del protocollo dalla blockchain. Le richieste sono di tipo POST e gli endpoint disponibili i seguenti:
+
+\begin{itemize}
+    \item \textbf{[POST] Get Account:} informazioni relative ad un account EOS
+    \item \textbf{[POST] Get Transaction:} informazioni relative ad una transazione
+    \item \textbf{[POST] Get Actions:} permette il recupero delle azioni e relative informazioni
+\end{itemize}
+
+Il limit rate per le API sopracitate è di 100 richieste per minuto.
+\\
+\\
+Abbiamo utilizzato le API ufficiali di Yup\footnote{https://docs.yup.io/protocol/yup-api} (URL: http://api.yup.io) per reperire informazioni relative agli utenti, tipo di account, token posseduti/guadagnati ecc., e per risalire al link di un contenuto votato quanto trovavamo un postid.
+Le richieste sono di tipo GET e gli endpoint disponibili i seguenti:
+
+\begin{itemize}
+    \item \textbf{[GET] /levels:} JSON di tutti gli utenti Yup
+    \item \textbf{[GET] /levels/users/{username}:} informazioni di uno specifico utente
+    \item \textbf{[GET] /accounts/{username}:} informazioni di uno specifico utente
+    \item \textbf{[GET] /followers/{username}:} seguaci di uno specifico utente
+    \item \textbf{[GET] /following/{username}:} account seguiti da uno specifico utente
+    \item \textbf{[GET] /accounts/actionusage/{eosname}:} azioni di voto effettuate da un utente
+\end{itemize}
+
+\begin{itemize}
+    \item \textbf{[GET] /posts/post/{postid}/{voteid}:} informazione relative ad un voto/post
+    \item \textbf{[GET] /comments/post/{postid}/{voteid}:} informazioni relativi ai commenti su un voto/post
+    \item \textbf{[GET] /posts/interactions/{postid}/{voteid}:} informazioni relative alle interazioni su un voto/post
+    \item \textbf{[GET] /votes/post/{postid}/voter/{username}:} informazioni relative ad un voto di uno specifico utente
+\end{itemize}
+
+I programmi utilizzati per effettuare le richieste alle API stati realizzati in linguaggio Python utilizzando la librearia \textit{requests} di Python3. Questi sono stati principalmente eseguiti su una macchina virtuale, utilizzando PowerShell come interfaccia, viste le elevate dimensione dei file JSON trattati (es. circa 33GB quello delle azioni).
+Nelle sezioni successive li tratteremo nel dettaglio, includendo API ed endpoint utilizzati, e li differenzieremo in base alla funzione per cui sono stati realizzati.
+\\
+\\
+%\subsection{Programma download dati (API, librerie}
+L'analisi relativa allo Smart Contract di Yup è stata effettuata tramite l'utilizzo dell'endpoint Get\_Actions delle API di eosflare.io. L'endpoint richiede tre parametri: account\_name, pos e offset. Rispettivamente indicano il nome EOS dell'account, il numero di sequenza da usare come punto di partenza per l'analisi (per esempio 0|1: dalla più vecchia, -2: dalla più recente) e quante azioni recuperare (massimo 1000 per richiesta).
+\\
+In Listing \ref{action_example} mostriamo un esempio di un oggetto JSON che rappresenta una azione scaricata tramite tale metodo. Utilizzeremo i punti di sospensione in quei campi in cui i parametri variano in base al tipo di azione.
+
+\begin{lstlisting}[language=json, label= {action_example}, captionpos=b, caption=Action JSON object]
+{"actions":
+    [{
+        "global_action_seq":
+        "account_action_seq":
+        "block_num":
+        "block_time":
+        "irreversible":
+        "action_trace": {
+            "receipt": {
+                "receiver": "yupyupyupyup"
+                "global_sequence": 
+                "code_sequence":
+                "abi_sequence":
+            },
+            "act": {
+                "account": ""
+                "name": ""
+                "authorization": [
+                    {
+                        "actor":
+                        "permission":
+                    }
+                ],
+                "data": {
+                    ...
+                },
+                "hex_data":
+            },
+            "context_free":
+            "elapsed":
+            "except":
+            "trx_id":
+            "block_num":
+            "block_time":
+            "producer_block_id":
+            "account_ram_deltas": [
+                {
+                    "account":
+                    "delta":
+                }
+            ],
+            "receiver": "yupyupyupyup",
+            "inline_traces": []
+        }
+    }],
+    "head_block_num":
+    "last_irreversible_block":
+}
+\end{lstlisting}
+
+I parametri del campo \textbf{data} variano a seconda del tipo di azione che prendiamo in considerazione. Abbiamo trattato i parametri specifici di alcune delle azioni più importanti in Sezione \ref{fasestudio_marker}.
+
+In Listing \ref{actions_download} il programma utilizzato per scaricare e costruire il JSON mostrato in Listing \ref{action_example}. Sono necessari tre parametri in input. I primi due sono il corrispettivo dei primi due parametri dell'endpoint \textbf{Get Actions}, quindi nome dell'account e punto di partenza, mentre il terzo specifica il numero totale di azioni che vogliamo scaricare (multiplo di 1000). E' stato possibile individuare il nome EOS del protocollo di Yup grazie all'elenco degli Smart Contract presente nella loro documentazione ufficiale.
+
+\begin{lstlisting}[language=Python, label={actions_download}, captionpos=b, caption=Actions Retrieval]
+import requests, time, json, os.path, math
+
+#API
+EOSFLARE_API = "https://api.eosflare.io/v1/eosflare/get_actions"
+
+#path
+fileout = "/path/to/out/dir/"
+
+# global values
+max_per_minut = 100
+tot           = 0
+
+#funzione utility per inizializzare il JSON
+def createJSON (response):
+    response.pop("head_block_num")
+    response.pop("last_irreversible_block")
+    response = json.dumps(response)
+    with open (fileout, "w") as outf:
+        outf.write(response)
+    outf.close()
+    return
+
+#funzione utility per l'append al JSON
+def appendJSON (response):
+    response = response["actions"]
+    with open(fileout, mode="r+") as outf:
+        outf.seek(os.stat(fileout).st_size - 2)
+        for x in range(len(response)):
+            outf.write( ", {}".format(json.dumps(response[x])))
+        outf.write("]}")
+    outf.close()
+
+#funzione utility che effettua una singola richiesta API
+def APIRequest (account_name, pos, offset):
+    global tot
+    data = {"account_name": account_name, "pos": int(pos), "offset": int(offset)}
+    r = requests.post(EOSFLARE_API, json.dumps(data))
+    status_code = r.status_code
+    print("[", tot + 1, "]: ", status_code)
+
+    while (status_code != 200):
+        print(r.content)
+        time.sleep(5)
+        data = {"account_name": account_name, "pos": int(pos), "offset": int(offset)}
+        r = requests.post(EOSFLARE_API, json.dumps(data))
+        status_code = r.status_code
+        print("[", tot + 1, "]: ", status_code)
+    return r
+
+#funzione utility per effettuare le richieste a blocchi da 100.000
+def Get_Actions (account_name, start, n, ow):
+    global offset, max_per_minut, tot
+    offset, times, cont  = 1000, 0, 0
+    pos = start
+    
+    while (times != n):
+        print("TIME: ", times + 1)
+        cont = 0
+        # check per il limit rate
+        while (cont != max_per_minut):
+            r = APIRequest(account_name, pos, offset)
+
+            r = r.json()
+            if (pos == 1):
+                createJSON(r)
+            else:
+                appendJSON(r)
+                
+            pos = pos + offset
+            cont = cont + 1
+            tot = tot + 1
+
+        times = times + 1
+        print("TOTAL: ", tot)
+        if (times != n or ow != 0):
+            print("SLEEPING")
+            time.sleep(61)
+
+    # se "end" non multiplo di 100.000
+    if (ow > 0):
+        print("ULTIMA POSIZIONE: ", pos - 1)
+        start = pos
+        max_per_minut = math.floor(ow / 1000)
+        Get_Actions(account_name, start, 1, 0)
+    return
+
+def main():
+    account_name, start, end = input("Account, start, end: ").split()
+    start = int(start)
+    end   = int(end)
+
+    global fileout
+    fileout = os.path.join(fileout, (account_name + ".json"))
+
+    n_times = math.floor((end - (start-1)) / 100000) # numero blocchi da 100.000 azioni (100 richieste)
+    ow      = (end - (start-1)) % 100000 # resto dopo ultimo blocco
+    ow2     = (end - (start-1)) % 1000 # resto per ultima richiesta singola
+    Get_Actions(account_name, start, n_times, ow)
+
+    #se "end" non multiplo di 1.000
+    if (ow2 > 0):
+        start = (end - ow2) + 1
+        r = APIRequest(account_name, start, ow2)
+        r = r.json()
+        try:
+            appendJSON(r)
+        except(FileNotFoundError):
+            createJSON(r)
+
+
+
+if __name__ == "__main__":
+    main()
+    print("|!|FINISHED|!|")
+\end{lstlisting}
+
+
+%subsection{Programma get postid}
+Come accennano in precedenza, solo alcune azioni di voto (postvote|v2|v3|v4) contengono nel loro corpo il link dell'indirizzo trovato. Nel caso delle createvote troviamo un postid e per risalire tramite esso al contenuto in questione abbiamo utilizzato l'endpoint /posts/post/{postid} delle API ufficiali di Yup.
+
+
+In Figura \ref{postid_example} e n Figura \ref{postid_download} mostriamo rispettivamente un esempio dell'oggetto JSON che rappresenta le informazioni di un post e un programma esempio che può essere utilizzato per effettuare tale operazione.
+
+\begin{lstlisting}[language=json, label={postid_example} ,captionpos=b, caption=Postid JSON object]
+{
+    "__v": 0,
+    "_id": {
+        "postid": "9223372310339125417"
+    },
+    "author": "yupcreators1",
+    "avatar": "",
+    "caption": "https://twitter.com/binance/status/1400864050972606471",
+    "catVotes": {
+        "funny": {
+            "down": 0,
+            "up": 0
+        },
+        "intelligence": {
+            "down": 0,
+            "up": 0
+        },
+        "overall": {
+            "down": 1,
+            "up": 4
+        },
+        "popularity": {
+            "down": 1,
+            "up": 4
+        }
+    },
+    "imgHash": null,
+    "lastUpdated": "1622827004000",
+    "onchain": true,
+    "previewData": {
+        "description": "\u201cHow to sell crypto on #Binance P2P using Lite mode. \n\n\u27a1\ufe0f https://t.co/grlK0QUGM5 https://t.co/fq7dOmVkDf\u201d",
+        "favicons": [
+            "https://abs.twimg.com/favicons/favicon.ico",
+            "https://abs.twimg.com/icons/apple-touch-icon-192x192.png"
+        ],
+        "img": "https://pbs.twimg.com/profile_images/1377608897557585922/xKgTpvdh_400x400.jpg",
+        "title": "Binance on Twitter",
+        "url": "https://twitter.com/binance/status/1400864050972606471",
+        "videos": []
+    },
+    "quantiles": {
+        "affordable": "none",
+        "agreewith": "none",
+        "beautiful": "none",
+        "chill": "none",
+        "easy": "none",
+        "engaging": "none",
+        "expensive": "none",
+        "funny": "none",
+        "intelligence": "none",
+        "interesting": "none",
+        "knowledgeable": "none",
+        "original": "none",
+        "overall": "fourth",
+        "popularity": "fourth",
+        "trustworthy": "none",
+        "useful": "none",
+        "wouldelect": "none"
+    },
+    "rating": {
+        "funny": {
+            "ratingAvg": 0,
+            "ratingCount": 0,
+            "ratingSum": 0
+        },
+        "intelligence": {
+            "ratingAvg": 0,
+            "ratingCount": 0,
+            "ratingSum": 0
+        },
+        "overall": {
+            "ratingAvg": -0.2,
+            "ratingCount": 5,
+            "ratingSum": -1
+        },
+        "popularity": {
+            "ratingAvg": -0.2,
+            "ratingCount": 5,
+            "ratingSum": -1
+        }
+    },
+    "sextiles": {
+        "affordable": "none",
+        "agreewith": "none",
+        "beautiful": "none",
+        "chill": "none",
+        "easy": "none",
+        "engaging": "none",
+        "expensive": "none",
+        "funny": "none",
+        "intelligence": "none",
+        "interesting": "none",
+        "knowledgeable": "none",
+        "original": "none",
+        "overall": "fourth",
+        "popularity": "fourth",
+        "trustworthy": "none",
+        "useful": "none",
+        "wouldelect": "none"
+    },
+    ...
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python, label={postid_download} ,captionpos=b, caption=Postid Retrieval]
+import requests, json
+
+
+#API + endpoint
+API = "http://api.yup.io/posts/post/"
+
+def get_Postid(postid):
+    url = API + str(postid)
+    r = requests.get(url)
+    r = r.json()
+    print("POST CAPTION: ", r["caption"])
+    return
+
+
+
+def main():
+    postid = input("POSTID: ")
+    get_Postid(postid)
+
+
+if __name__ == "__main__":
+    main()
+    print("|!|DONE|!|")
+\end{lstlisting}
+
+Se si partisse da un JSON contenente tutte le azioni da analizzare, come nel nostro caso, basta effettuare il parsing del JSON e considerare solo le azioni di createvote, estrapolare il parametro \textit{postid} nel campo \textit{data} e passarlo alla funzione \textbf{get\_Postid} appena descritta.
+\\
+\\
+%\subsection{Programma download JSON utenti (API, librerie}
+I dati relativi a tutti gli account/utenti presenti sul servizio sono stati reperiti utilizzando l'endpoint /levels delle API ufficiali.
+\\
+\\
+Di seguito troviamo in Figura \ref{user_example} un esempio dell'oggetto JSON che rappresenta un utente e in Figura \ref{users_download} il programma utilizzato per il download di tutti gli utenti.
+
+\begin{lstlisting}[language=json, label={user_example}, captionpos=b, caption=User JSON object]
+{
+    "__v": 0,
+    "_id": 
+    "avatar": 
+    "balance": {
+        "EOS": 
+        "YUP": 
+        "YUPETH":
+        "YUPX":
+    },
+    "bio": 
+    "claimed_creator_rewards": 
+    "cum_deposit_time":,
+    "eosname": 
+    "fullname": 
+    "last_interval_claimed": 
+    "skey":
+    "total_claimed_rewards": 
+    "total_creator_rewards":
+    "total_stake": {
+        "YUPETH": 
+    },
+    "total_vote_value": 
+    "twitterInfo": {
+        "isAuthUser": 
+        "isMirror": 
+        "isTracked": 
+        "userId": ,
+        "username": 
+    },
+    "username": 
+    "weight": # Influenza
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python, label={users_download} ,captionpos=b, caption=Users Retrieval]
+import requests, json
+
+#API
+YUP_API = "http://api.yup.io/levels"
+#output path
+outpath = "/pato/to/out/dir/"
+
+
+def printUsers (response):
+    cont = 0
+    for el in response:
+        if (el["_id"]): 
+            cont = cont + 1
+    print("N_USERS: ", cont)
+    return
+
+
+def writeJSON(name, response):
+    filename = outpath + name + ".json"
+    with open(filename, "w") as outf:
+        outf.write(response)
+    outf.close()
+    return
+
+
+def main():
+    r = requests.get(YUP_API)
+    print(r.status_code)
+
+    # display number of users found
+    r = r.json()
+    printUsers(r)
+
+    # generate JSON
+    r = json.dumps(r)
+    writeJSON("yup_accounts", r)
+
+
+if __name__ == "__main__":
+    main()
+    print("|!|DONE|!|")
+\end{lstlisting}

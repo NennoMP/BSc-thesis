@@ -1,0 +1,231 @@
+\chapter{STATO DELL'ARTE}
+\label{chapter_background}
+In questo Capitolo daremo una descrizione della tecnologia blockchain su cui la piattaforma oggetto dei nostri studi, YUP, si basa. Tratteremo nello specifico le blockchain di Ethereum e di EOS, dove la prima è utilizzata da Yup per la liquidità e la seconda è dove il protocollo è effettivamente implementato, avendo un occhio di riguardo per gli algoritmi di consenso che le caratterizzano. Con lo scopo di darne una descrizione sufficientemente ampia tratteremo anche gli algoritmi di consenso presenti su altre blockchain.
+Concluderemo trattando brevemente altre dApp sociali e confrontandole con Yup in modo da comprendere principali differenze ed aspetti in comune.
+
+\section{Blockchain e DLT}
+Si fa spesso confusione tra i concetti di \textbf{blockchain} e \textbf{Distributed Ledger (DLT)}\cite{panwar2020distributed}. Le tecnologie \textbf{blockchain} sono infatti incluse nella più ampia famiglia delle Distributed Ledger Technology (DLT), ovvero sistemi che si basano su un \textbf{registro distribuito}. Sia in un DLT che in una blockchain tutti i nodi della rete mantengono una copia di quest'ultimo e possono accedervi per operazioni di lettura o scrittura, è poi necessario il passaggio per un ente centrale o l'intermediazione di soggetti validatori. Nel caso delle blockchain le modifiche al registro sono regolate tramite algoritmi di consenso che permettono la regolarizzazione tra le varie versioni del registro presenti sulla rete. L'utilizzo di algoritmi di consenso uniti ad un ampio uso della crittografia, hanno lo scopo di garantire la sicurezza e l'immutabilità del registro.
+
+Nella Tabella \ref{tab: blockchainDLT} vengono descritti i principali punti di differenza tra le due tecnologie.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{ | l | p{3.4cm} | p{3.4cm} | }
+\hline
+    \toprule
+\textbf{CARATTERISTICA}      
+& \textbf{BLOCKCHAIN}   
+& \textbf{DLT} \\\midrule
+\hline
+\textbf{STRUTTURA BLOCCO}
+& Dati rappresentati come catena di blocchi
+& Dati rappresentati con qualsiasi tipo di struttura \\\hline
+\textbf{SEQUENZA}
+& Tutti i blocchi seguono una specifica sequenza 
+& Diversi tipi di DLT hanno diverse sequenze \\\hline
+\textbf{CONSUMO ENERGETICO}
+& Alto consumo di energia, conseguenza dell'utilizzo di Algoritmi di consenso proof-based 
+& Nel DLT non è necessario alcun tipo di consenso, di conseguenza il consumo energetico è basso \\\hline
+\textbf{TOKENS}
+& Differenti tipi di token e valute per differenti tipi di blockchain 
+& Nel DLT non vi è necessità di alcuna valuta o token \\
+    \bottomrule
+\hline
+\end{tabular}
+\caption{Differenze tra Blockchain e DLT}
+\label{tab: blockchainDLT}
+\end{table}
+
+Le blockchain permettono quindi di effettuare trasferimenti (transazioni), siano essi semplici o complessi a seconda del livello di programmabilità consentito dalla piattaforma, e presentano l'esistenza di un asset univoco e trasferibile che può essere digitale o fisico con un corrispettivo digitale, una criptovaluta o un token.
+\\
+\\
+Le applicazioni dei sistemi Blockchain sono molteplici ed interessano numerosi settori, nascono dalla necessità di eliminare intermediari e decentralizzare. Si può così fare a meno di banche, notai, istituzioni finanziarie e così via.
+Volendo fare alcuni esempi, il registro di una blockchain può essere strutturato come una catena di blocchi contenenti transazioni (es. Bitcoin e Ethereum) o essere costituito da una catena di transazioni (es. Ripple \cite{armknecht2015ripple}). Il consenso, al fine di garantire la decentralizzazione, è distribuito su tutti i nodi all'interno della rete. In altre parole tutti i nodi possono partecipare al processo di validazione (raggiungimento del consenso).
+
+\section{Bitcoin}
+Bitcoin \cite{segendorf2014bitcoin,underwood2016blockchain} è un sistema di pagamento e criptovaluta virtuale. E' stato progettato per essere indipendente da qualsiasi tipo di entità centralizzata, quali governi, banche o altre istituzioni. I pagamenti in Bitcoin possono essere effettuati tra due individui a patto che entrambi dispongano del software necessario (\textit{wallet}) sul proprio dispositivo.
+La sicurezza di tali pagamenti viene garantita tramite la \textbf{crittografia asimmetrica}\footnote{https://it.wikipedia.org/wiki/Crittografia\_asimmetrica}, dove ogni individuo possiede due chiavi uniche, una pubblica ed una privata. Se per esempio l'individuo A vuole inviare qualcosa all'individuo B, quello che farà è utilizzare la chiave pubblica di B per crittografare tale transazione, in questo modo B sarà l'unico capace di effettuare l'operazione di decifrazione utilizzando la sua chiave privata.
+Le transazioni vengono poi verificate/confermate dalla rete. L'incentivo ai miners affinché investano potenza computazionale in tale processo di verifica è il fatto che ricevano come ricompensa, nel caso in cui siano stati i primi a risolvere la funzione hash, la possibilità di creare nuovi BTC. Infatti, il miner che è stato il più veloce nel processo di verifica, aggiunge una transazione extra al blocco affinché sia verificata. Questa accredita al wallet del miner la quantità di BTC che gli spetta. La difficoltà di tali funzioni viene aggiustata dal network in base alla potenza computazione disponibile, se questa diminuisce diminuirà anche la complessità e viceversa.
+Uno dei principali problemi di Bitcoin è che i pagamenti non sono in tempo reale, infatti, a seconda della disponibilità computazionale della rete e di altri parametri altamente aleatori, passano in genere almeno 10 minuti prima che una transazione sia verificata. Inoltre, una regola generale è che sia necessario attendere 6 round di verifica per essere sicuri che l'ordine sia stato aggiunto alla blockchain in maniera irreversibile. Di conseguenza, una transazione può richiedere addirittura 1 ora di tempo prima di essere confermata.
+
+\section{Ethereum}
+Ethereum \cite{pisanu2019Ethereum}\cite{ferretti2020ethereum} è una piattaforma decentralizzata il cui scopo è lo sviluppo e la gestione di \textbf{Smart Contract} \cite{mohanta2018overview} e \textbf{dApp}, ovvero software totalmente autonomi e sicuri che vengono eseguiti sulla rete. Per farlo, introduce \textbf{Solidità}, un linguaggio di programmazione Turing completo e di alto livello.
+\\
+La rete di Ethereum è caratterizzata da un computer virtuale decentralizzato che prende il nome di EVM (Ethereum Virtual Machine)\footnote{https://academy.bit2me.com/it/che-cos\%27è-ethereum-virtual-machine-evm/}. La EVM esegue una completa astrazione del sistema, ovvero gestisce e limita l'accesso alle risorse in un ambiente controllato, con l'obiettivo di impedire attacchi alla rete. Inoltre, Come in altre blockchain permissionless, viene garantita l'anonimato tramite l'utilizzo di pseudonimi e indirizzi multipli per gli account.
+\\
+\\
+L'Ether, la criptovaluta di Ethereum, può essere definita come il carburante che permette a queste applicazioni di operare. Di fatto viene utilizzata come pagamento per l'utilizzo della potenza di calcolo del network, senza la quale questi non potrebbero esistere.
+Il Gas di Ethereum, da non confondere con l'Ether, è invece un'unità di misura utilizzata per constatare la quantità di lavoro svolto da Ethereum per effettuare transazioni o interazioni all'interno della rete. Possiamo comprendere meglio questo concetto definendo tre parametri:
+
+\begin{itemize}
+    \item \textbf{Unità Gas}: quantità di Gas, priva di valore monetario, attribuibile ad una specifica istruzione.
+    \item \textbf{Prezzo del Gas:} il pagamento della commissione che effettuiamo per ciascuna unità di Gas. Il pagamento è effettuato in Gwei, unità decimali di Ether. 
+    \item \textbf{Limite di Gas:} indica il costo massimo in unità Gas di una transazione
+\end{itemize}
+
+Ricapitolando, Ether è una criptovaluta con valore monetario che utilizziamo per pagare la commissione quando vogliamo effettuare un'operazione nella rete. Il costo di tale operazione è misurato in unità Gas e non può assumere un costo superiore al \textbf{Limite di Gas} specifico di quella operazione. La commissione sarà calcolata tramite il prodotto tra il numero di unità e il costo di quest'ultima.
+
+L'attuale Ethereum, che indichiamo con \textbf{Ethereum 1.0} si basa su un protocollo di consenso Proof-of-Work (PoW). Per far fronte ai principali problemi Ethereum è atteso un aggiornamento, \textbf{Ethereum 2.0} \cite{provenzani2020Ethereum}, che mira a migliorare scalabilità e sicurezza del network attraverso una serie di modifiche alla sua struttura, la più importante appunto il cambiamento dell'algoritmo di consenso con il passaggio al Proof-of-Stake, di cui daremo una descrizione in Sezione \ref{pos_marker}. Il lancio di Ethereum 2.0 consiste in varie fasi\footnote{https://ethereum.org/en/eth2/}, che elenchiamo:
+
+\begin{itemize}
+    \item \textbf{Fase 0:} implementazione della \textbf{Beacon Chain}, introduce il PoS e lo staking e getta le basi per le fasi successive [COMPLETATA: \textit{1 Dicembre 2020}]
+    \item \textbf{Fase 1/1.5:} unione effettiva della rete principale con la Beacon Chain [ATTESA: \textit{2021/2022}]
+    \item \textbf{Fase 2:} le Shard chain sono completamente operative, incremento notevole della capacità di processare transazioni e memorizzate dati [ATTESA: \textit{2021/2022}]
+\end{itemize}
+
+\section{EOS}
+La blockchain di EOS \cite{xu2018eos} punta a diventare un SO (Sistema Operativo) decentralizzato con lo scopo di supportare dApps (applicazioni decentralizzate) su scala industriale. Nonostante questo punto rappresenti già di per sé qualcosa di notevole, sono altre due le caratteristiche che rendono EOS un progetto così accattivante e innovativo:
+
+\begin{enumerate}
+    \item \textbf{Rimozione delle commissioni sulle transazioni}
+    \item \textbf{Notevole scalabilità (milioni di transazioni al secondo)}
+\end{enumerate}
+
+Vediamo quali sono le principali funzionalità offerte da EOS, in modo tale da comprenderne i punti di forza e di conseguenza i vantaggi che offre rispetto ad altre blockchain.
+\begin{enumerate}
+    \item \textbf{Scalabilità:} possibilità di processare milioni di transazioni al secondo grazie all'utilizzo del meccanismo DPoS (\textit{Delegated PoS}) \cite{vitale2018DPOS,ZHANG202093}
+    \item \textbf{Flessibilità:} per evitare un arresto del sistema in seguito ad un blocco malfunzionante, sempre grazie all'utilizzo del DPoS il blocco in questione viene fermato fino alla manutenzione del sistema
+    \item \textbf{Usabilità:} utilizza un file API (C/C++) per gli Smart Contract e ne fornisce un'ampia documentazione
+    \item \textbf{Prestazioni sequenziali:} supporta prestazioni sequenziali veloci
+    \item \textbf{Processing parallelo:}  processing parallelo di Smart Contract tramite scalabilità orizzontale, comunicazione asincrona e interoperabilità
+\end{enumerate}
+
+In aggiunta al DPoS, che descriveremo nel dettaglio nella Sezione \ref{dpos_marker}, EOS implementa un \textbf{Asynchronous Byzantine Fault Tolerance algorithm (ABFT)} \cite{castro1999practical}, dove con "errore bizantino" in ambito blockchain indichiamo un difetto che può essere relativo a fallimenti nel raggiungimento del consenso, a problemi durante il processo di validazione o alla mancata verifica dei dati. 
+\\
+Questa caratteristica rende possibile il raggiungimento del consenso anche in presenza di nodi disonesti all'interno del network. Questo ha l'obiettivo di ottenere un'irreversibilità delle transazioni molto più rapida, di fatto l'algoritmo appena citato fornisce una conferma del 100\% dell'irreversibilità in 1 secondo.
+
+\subsection{Risorse}
+Per poter utilizzare la blockchain di EOS servono tre tipi di risorse:
+
+\begin{itemize}
+    \item \textbf{RAM:} utilizzata per la memorizzazione di dati sulla blockchain,
+    \item \textbf{CPU:} la potenza di calcolo del network a disposizione,
+    \item \textbf{NET:} la larghezza di banda del network a disposizione.
+\end{itemize}
+
+Gli utenti avranno bisogno di RAM per creare nuovi accounts su EOS, aggiungere informazioni al proprio account, e le dApp utilizzeranno la RAM per memorizzare le informazioni sullo stato della loro applicazione in modo che siano rapidamente disponibili. 
+
+Per incrementare la quantità utilizzabile delle risorse sopracitate è sufficiente incrementare la quantità di EOS in stake. Puntualizziamo che la RAM può essere solamente acquistate e venduta, non è possibile trasferirla ad altri utenti.
+
+\section{Algoritmi di consenso}
+Come precedentemente detto, una delle caratteristiche che differenzia le varie tecnologie Blockchain da DLTs è l'algoritmo utilizzato per il raggiungimento del consenso. Di seguito daremo una breve descrizione delle più famose tipologie.
+
+\subsection{Proof-of-Work (PoW)}
+\label{pow_marker}
+Il PoW \cite{pisanu2019Ethereum,vitale2018DPOS,ZHANG202093} viene attualmente utilizzato dalla maggior parte delle criptovalute sul mercato, tra cui Bitcoin e Ethereum. Permette ai cosiddetti \textit{"miners"} di guadagnare criptovaluta come ricompensa per la risoluzione di problemi matematici complessi, anche noti come \textit{decryption}. La ricompensa dipende dal numero di problemi che vengono risolti ed è un vero e proprio certificato del loro "lavoro". 
+Tale processo richiede una quantità di energia ed una forza computazionale elevate da cui derivano i suoi principali problemi:
+
+\begin{itemize}
+    \item \textbf{Tariffe sulle transazioni}
+    \item \textbf{Bassa Scalabilità}
+    \item \textbf{Bassa Sostenibilità}
+\end{itemize}
+
+Nel momento in cui un "miner" risolve un problema, questo presenta il proprio blocco al network affinché sia verificato. Questa verifica, al contrario dell'operazione mining (risoluzione dei problemi), è facile e poco costosa dal punto di vista computazionale.
+La PoW è un modello creato in un periodo in cui si presumeva che le blockchain fossero praticamente inattaccabili, a causa del costo in elettricità di un computer per effettuare tale attacco. I principali problemi di Bitcoin ed Ethereum derivano proprio dall'utilizzo del PoW come algoritmo di consenso: bassa scalabilità ed enorme consumo energetico per le operazioni di verifica.
+
+\subsection{Proof-of-Stake (PoS)}
+\label{pos_marker}
+Il PoS \cite{pisanu2019Ethereum,vitale2018DPOS,ZHANG202093} si contraddistingue dal PoW tramite la contrapposizione dei validatori ai miners e dello staking al mining. I validatori "bloccano" una parte delle loro monete come stake, e successivamente inizieranno a valutare i blocchi. Quando individuano un blocco che ritengono sia valido e che possa essere aggiunto al network lo validano scommettendo su di esso, se poi questo blocco sarà effettivamente aggiunto i validatori coinvolti riceveranno una ricompensa in proporzione al valore scommesso.
+Tale modello risolve il problema della sicurezza visto precedentemente. Gli attacchi vengono resi inefficaci per il semplice fatto che il costo per la loro attuazione sarebbe maggiore del possibile guadagno. Viene anche risolto il problema dell'enorme costo energetico ed ecologico necessario per il funzionamento del PoW. Il PoS utilizza infatti molta meno energia rispetto al PoW perché i validatori non sono in competizione tra loro.
+
+Nel modello di consenso PoS ha grande importanza il numero di token che ciascun utente possiede, più è grande tale quantità, ovvero la partecipazione (stake), maggiori sarebbero le perdite se l'utente si comportasse in maniera scorretta o malevola.
+I blocchi della PoS, a differenza di quelli della PoW, non sono generati (o estratti), bensì coniati. Infatti, i forgers (coloro che coniano il blocco) non avranno un premio per la coniazione del blocco, ma riceveranno solo le commissioni delle transazioni presenti nel blocco. I forgers vengono selezionati su base pseudocasuale tra i partecipanti che possiedono una partecipazione significativa in un sistema PoS. Cardano è una blockchain che utilizza PoS.
+
+\subsection{Delegated Proof-of-Stake (DPos)}
+\label{dpos_marker}
+Il DPoS \cite{pisanu2019Ethereum,vitale2018DPOS,ZHANG202093} attua una vera e propria democrazia tecnologica, costituita da una comunità di Block Producer che condividono un insieme di regole specifico.
+Mentre in PoS ogni portafoglio che possiede monete può agire da validatore e partecipare alla formazione del consenso, in DPoS ogni portafoglio con monete può partecipare all'elezione dei Block Producers, una sorta di rappresentanti, dove questi ultimi si occupano della validazione dei blocchi e contribuiscono alla formazione del consenso venendo pagati per il loro lavoro tramite il sistema.
+Questa sottile ma importante differenza evita un enorme rischio presente in PoS e PoW, che è il verificarsi di un consolidamento delle posizioni di vantaggio, ovvero che pochi soggetti controllino più del 51\% del processo di consenso da cui ne consegue di fatto la perdita della decentralizzazione. Oltretutto il DPoS non presenta il rischio di hard-fork perché si basa sulla cooperazione, piuttosto che la competizione, tra i validatori.
+\\
+Un'altra fondamentale funzionalità del DPoS è la TAPOS (Transaction As Proof Of Stake). Ogni transazione nel sistema deve mantenere l'hash del block header più recente, questo previene il ripetersi di transazioni su chain differenti e segnala al network che un utente e il suo stake si trova su una particolare fork.
+%Nell'eventualità di un dissenso tra questi ultimi il consenso passa alla catena più lunga.
+\\
+\\
+Vediamo in maniera più specifica il suo funzionamento:
+
+\begin{itemize}
+    \item I blocchi sono prodotti a turni di 21,
+    \item All'inizio di ogni turno vengono scelti 21 Block Producers tra quelli ritenuti validi (con un consenso di almeno 15/21)
+    \item I top 20 vengono automaticamente selezionati, mentre il 21esimo è scelto in proporzione al numero dei voti in relazione agli altri produttori,
+    \item I produttori vengono quindi mescolati utilizzando un numero pseudocasuale derivato dal tempo del blocco. In questo modo si garantisce che venga mantenuta una connettività equilibrata con tutti gli altri produttori,
+    \item I produttori che non producono almeno un blocco ogni 24 ore vengono rimossi in modo da assicurare una regolare produzione di blocchi e un tempo del blocco intorno ai 3 secondi.
+\end{itemize}
+La prima blockchain basata su DPoS è stata \textbf{Bitshares}. A suo tempo era la blockchain più veloce, grazie alla tecnologia implementata.
+
+\section{Blockchain Online Social Media}
+I Blockchain Online Social Media (BOSM) \cite{guidi2020blockchain} sono piattaforme decentralizzate basate sulla tecnologia blockchain che adottano la crittografia end-to-end per ogni interazione e, solitamente, un asset utilizzato per transazioni all'interno della piattaforma, crowdfunding o la ricompensa dei propri utenti.
+Ma vediamo quali sono i benefici dello sviluppo di progetti Social Media su una blockchain:
+\\
+\begin{itemize}
+    \item \textbf{Controllo sulla mercificazione dell'utente} %(\textit{A check on user commodification})
+    \item \textbf{Privacy} %(\textit{Privacy for freedom and expression})
+    \item \textbf{Autenticità dei contenuti}
+    \item \textbf{Nessuna censura}
+    \item \textbf{Crowdfunding e Rewarding} %(\textit{Scope for crowdfunding})
+\end{itemize}
+I dati degli utenti sono uno degli asset che portano maggior profitto. Non è una novità il fatto che la maggior parte, se non tutti, i principali Social Network attuali utilizzino i dati dei propri utenti per effettuare pubblicità mirata o vendano questi ultimi a parti terze. Basandosi su una tecnologia decentralizzata, non si ha un unico punto di centralizzazione per la raccolta dati, e inoltre nessuno è in possesso della piattaforma e ne consegue la piena libertà di espressione, e l'assenza di censura, aspetto che può però essere sia negativo che positivo.
+
+Di seguito verranno presentati i principali BOSMs. In particolare: Steemit, Hive Blog, PeakD, Minds, BitClout, e Snax.
+
+\subsection{Steemit}
+Steemit\cite{tarar2017Steemit,guidi2020steem,guidi2021socioeconomic} è una piattaforma che si basa sulla blockchain di Steem. Presenta numerosi elementi e funzionalità in comune con i principali social network quali Facebook o Reddit. La piattaforma distribuisce ricompense ai propri utenti che pubblicano contenuti, in base al numero di commenti e voti ottenuti, o che li commentano.
+All'interno della piattaforma gli utenti possono assumere il ruolo di Creatore, ovvero colui che crea contenuti, o il ruolo di curatore, ovvero colui che esprime un parere sui contenuti. Un utente può svolgere entrambi i ruoli: essere creatore di alcuni contenuti e decidere di curarne altri Nello specifico le valutazioni che possono essere attribuite ad un contenuto sono Upvote (like) per una valutazione positiva, o Flag (dislike) per una valutazione negativa. In base ai pareri espressi dagli utenti la reputazione di un autore può aumentare o diminuire e andare quindi ad influenzare i suoi profitti. 
+
+Su Steemit sono presenti tre tipi di token: \textbf{Steem}, \textbf{Steem Dollars} e \textbf{Steem Power}. Il primo è la criptovaluta liquida di Steemit e possono essere scambiati sulle piattaforme di exchange per altre valute virtuali o fisiche e sulla piattaforma stessa per \textbf{Steem Dollars} e \textbf{Steem Power}.
+Gli \textbf{Steem Dollars} e la \textbf{Steam Power} sono utilizzati per la distribuzione delle ricompense, in particolare queste vengono pagate al 50\% in Steem Dollars e per il restante 50\% in Steem Power. I primi possono essere scambiati per gli altri due token mentre i secondi rappresentano lo stake degli utenti. Lo stake, oltre ad influenzare le meccaniche di creazione dei blocchi, come spiegato in Sezione \ref{dpos_marker}, influenzano anche la forza di voto di ogni utente, una sorta di misura della loro influenza. Per ottenere Steem Power bisogna che i propri post ottengano gradimento da altri utenti, mettere like a contenuti meritevoli, fare mining o con la conversione di Steem.
+
+\subsection{Hive Blog e PeakD}
+La blockchain utilizzata da Hive Blog e PeakD, rispettivamente in 2° e 3° posizione della classifica delle dApp sociali, è HIVE. In HIVE troviamo diversi tipi di asset che sono poi utilizzate nelle varie dApp che la utilizzano: Hive, Hive Dollar e Hive Power.
+Dove i primi due sono dei token ed il terzo una sorta di misura dell'influenza che un individuo ha all'interno della piattaforma: più è alto questo valore maggior sarà il peso delle azioni dell'utente e le ricompense ottenute. L'Hive Power può essere convertita in Hive tramite il "Powering Down", l'opposto può essere fatto con il "Powering Up", mentre gli Hive Dollar possono essere convertiti esclusivamente in Hive.
+Il numero di transazioni che un utente può effettuare giornalmente viene misurato in "Resource Credits" (RC). Il costo in RC varia a seconda del tipo di transazione. Nel momento in cui il valore scende a 0\% significa che l'utente non può più effettuare alcuna transazione e dovrà quindi o aspettare che si rigeneri o convertire con il Power Up la sua Hive Power.
+\\
+Altra importante caratteristica di tale blockchain è la "True Ownership" che viene garantita agli utenti: grazie a decentralizzazione e ad un nuovo concetto di chiavi crittografiche.
+\\
+\\
+%\subsubsection{Hive Blog}
+Hive Blog\cite{marwan2020HiveBlog} è una piattaforma di blogging. Ricompensa i suoi utenti per creare, votare o commentare contenuti. Spesso definito come "Reddit decentralizzato", ne eredita la maggior parte delle funzionalità: upvote (like), commento, repost.
+\\
+\\
+%\subsubsection{PeakD}
+PeakD\footnote{https://peakd.com/}, lanciato nel 2020, è un'altra piattaforma decentralizzata di blogging che opera su questa blockchain. Post e commenti degli utenti esistono indipendentemente da PeakD e il creatore di un contenuto è l'unico che ha potere di modifica su di essi tramite le proprie chiavi. 
+Tutto ciò che viene pubblicato, transazione e testo, viene permanentemente memorizzato sulla blockchain. Anche altri siti saranno capaci di mostrare e interagire con questi contenuti.
+
+\subsection{Minds}
+Mind\footnote{https://www.minds.com/} è un network privo di censura ed una delle poche piattaforma digitali in cui l'utente possiede l'interezza dei suoi dati. La piattaforma è completamente open-source, fornisce tutte le features dei principali socials (Youtube, Facebook, Reddit). Il sistema di ricompensa è relativo ai contenuti che l'utente produce e al suo impegno all'interno del network: voti, commenti, ecc. Le ricompense possono poi essere spese per "potenziare" i propri post o fare crowdfunding per altri utenti. I punti possono anche essere acquistati tramite PayPal o Bitcoin.
+
+\subsection{BitClout}
+BitClout\footnote{https://docs.bitclout.com/} è un nuovo Social Network che quantifica il valore delle persone in criptovaluta e permette di investire su di esse. Di fatto trasforma una persona reale in un asset economico virtuale, rendendo l'individuo e la sua reputazione entità suscettibili di valutazione economica. Chiunque può registrarsi sulla piattaforma, anche se di default sono stati registrati dal sistema i primi 15.000 influencer di Twitter. Ciò significa che questi account sono stati creati per conto di quella persona e senza il suo consenso. Al fine di riscattare tale account l'utente deve pubblicare la public key dell'account BitClout e pubblicarla su Twitter. 
+Per poter iniziare ad investire su questi asset è necessario possedere il token omonimo (BitClout), acquistabile in Bitcoin. Gli utenti possono poi investire su un profilo acquistando la moneta corrispondente oppure vendere quelle già acquistate. Il guadagno è collegato al salire o scendere del valore sociale del profilo, che segue una semplice logica di richiesta/offerta, più persone acquistano più sale, più persone vendono più scende il valore.
+Una sottile differenza rispetto ad altri Social è che l'investimento non viene più fatto sui contenuti pubblicati ma sulla persona. Ne conseguono numerosi dubbi etici, per esempio le conseguenze che derivano nel mondo reale dalla speculazione su un determinato individuo, di fatto divenuto un asset. Volendo fare un esempio, atti di diffamazione con lo scopo di decrementare il valore di una moneta relativa ad una specifica persona.
+
+
+\subsection{Snax}
+Snax\footnote{https://snax.one/}, basato sulla blockchain omonima, è probabilmente il BOSM più simile a Yup, infatti non si presenta come una piattaforma alternativa bensì come uno strumento utilizzabile semplicemente mediante un overlay. 
+Gli utenti vengono ricompensati per i propri post e per le opinioni che esprimono su quelli di altri individui in criptovaluta, maggior è il peso sociale di un individuo più peso avranno i suoi contenuti e le sue opinioni.
+\\
+Tutte le transazioni sono gratis e istantanee ed è possibile inviare token a qualsiasi altro utente Snax e addirittura anche a persone che non sono registrate sul servizio tramite il nome del profilo Twitter o Steem.
+\\
+\\
+Di seguito un piccolo riassunto delle differenti BOSM che abbiamo analizzato incentrando la distinzione in base alla blockchain utilizzata e al relativo algoritmo per il raggiungimento del consenso.
+\begin{center}
+\begin{tabular}{ |c|c|c| }
+ \hline
+ BOSM & Blockchain & Algoritmo di consenso \\
+ \hline
+ Steemit & Steem & DPoS \\
+ \hline
+ Hiveblog & Hive & DPoS \\
+ \hline
+ PeakD & Hive & DPoS \\
+ \hline
+ Minds & Ethereum & PoW \\
+ \hline
+ BitClout & BitClout & PoW \\
+ \hline
+ Snax & Snax & DPoS \\
+ \hline
+\end{tabular}
+\end{center}
+
+

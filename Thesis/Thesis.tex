@@ -1,0 +1,144 @@
+\documentclass[12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{floatpag}
+\usepackage{todonotes}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{eurosym}
+\usepackage{adjustbox}
+\usepackage{appendix}
+\usepackage{booktabs}
+\usepackage{multicol}
+\usepackage[sorting=none,style=numeric-comp,backend=biber]{biblatex}
+\addbibresource{bibliography.bib}
+\graphicspath{ {images/} }
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\colorlet{punct}{red!60!black}
+\definecolor{background}{HTML}{EEEEEE}
+\definecolor{delim}{RGB}{20,105,176}
+\colorlet{numb}{magenta!60!black}
+
+\lstdefinelanguage{json}{
+    basicstyle=\normalfont\ttfamily,
+    numbers=left,
+    numberstyle=\scriptsize,
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=lines,
+    backgroundcolor=\color{background},
+    literate=
+     *{0}{{{\color{numb}0}}}{1}
+      {1}{{{\color{numb}1}}}{1}
+      {2}{{{\color{numb}2}}}{1}
+      {3}{{{\color{numb}3}}}{1}
+      {4}{{{\color{numb}4}}}{1}
+      {5}{{{\color{numb}5}}}{1}
+      {6}{{{\color{numb}6}}}{1}
+      {7}{{{\color{numb}7}}}{1}
+      {8}{{{\color{numb}8}}}{1}
+      {9}{{{\color{numb}9}}}{1}
+      {:}{{{\color{punct}{:}}}}{1}
+      {,}{{{\color{punct}{,}}}}{1}
+      {\{}{{{\color{delim}{\{}}}}{1}
+      {\}}{{{\color{delim}{\}}}}}{1}
+      {[}{{{\color{delim}{[}}}}{1}
+      {]}{{{\color{delim}{]}}}}{1},
+}
+
+\lstdefinestyle{my_style}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=my_style}
+
+
+\renewcommand{\contentsname}{Indice}
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{center}
+\begin{minipage}{0.75\linewidth}
+    \centering
+% logo università
+    \includegraphics[width=0.5\linewidth]{unipi}\\
+    \vspace{0.5cm}
+% dipartimento e corso di laurea
+    {\Large Dipartimento di Informatica\par}
+    {\Large Laurea Triennale in Informatica\par}
+    \vspace{2cm}
+% titolo tesi
+    {\uppercase{\Large Studio di Yup: la social dApp della blockchain EOS.IO\par}}
+    \vspace{2cm}
+% anno accademico
+    ANNO ACCADEMICO 2020 - 2021 
+    \vspace{2cm}
+\end{minipage}
+\end{center}
+% relatori & candidato
+    \textbf{\underline{Relatori:}}
+    \hfill
+    \textbf{\underline{Candidato:}} \\
+    Prof.ssa Barbara GUIDI
+    \hfill
+    Matteo PINNA \\
+    Dott. Andrea MICHIENZI \\
+    \hfill
+\clearpage
+
+\tableofcontents
+
+% CAPITOLO: INTRODUZIONE
+\include{1_Introduction}
+
+% CAPITOLO: STATO DELL'ARTE
+\include{2_StateOfArt}
+
+% CAPITOLO: PIATTAFORMA YUP
+\include{3_YupPlatform}
+
+% CAPITOLO: IMPLEMENTAZIONE
+\include{4_Implementation}
+
+% CAPITOLO: ANALISI
+\include{5_Analysis}
+
+% CAPITOLO: CONCLUSIONI E LAVORI FUTURI
+\include{6_Conclusions}
+
+% BIGLIOGRAFIA
+\addcontentsline{toc}{chapter}{Bigliografia}
+\printbibliography[title = Bigliografia]
+
+% APPENDICE
+\include{Appendix}
+
+\end{document}
